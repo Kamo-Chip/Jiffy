@@ -1,1 +1,1 @@
-# Jiffy
+# API practice using GIPHY API
