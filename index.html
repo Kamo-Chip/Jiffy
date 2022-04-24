@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>GIPHY</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <h1>JIFFY</h1>
+        <script>
+            const img = document.createElement("img");
+
+            const searchContainer = document.createElement("div");
+            searchContainer.classList.add("search");
+
+            const searchBar = document.createElement("input");
+            searchBar.type = "text";
+            searchBar.placeholder = "Search gifs";
+               
+            const btnSearch = document.createElement("button");
+            btnSearch.textContent = "Search";
+            btnSearch.addEventListener("click", ()=>{
+                searchBar.addEventListener("input", ()=>{
+                    searchBar.setCustomValidity("");
+                });
+                if(searchBar.value === ""){
+                    searchBar.setCustomValidity("Cannot be empty");
+                    searchBar.reportValidity();
+                    return;
+                }
+                loadImage(searchBar.value);
+            });
+
+            searchContainer.append(searchBar, btnSearch);
+
+            document.body.append(searchContainer, img);
+
+            function getGifs(gifType){
+                return fetch(`https://api.giphy.com/v1/gifs/translate?api_key=32ryWNgR3urVCwpdNTZ7FxmLFtIZyFKo&s=${gifType}`, {mode: "cors"})
+            }
+
+            function loadImage(gifType){
+                getGifs(gifType)
+                .then(function(response){
+                    return response.json();
+                })
+                .then(function(response){
+                    img.src = response.data.images.original.url;
+                })
+                .catch(()=>{
+                    const errorDiv = document.createElement("div");
+                    errorDiv.classList.add("error");
+                    const errorMessage = document.createElement("p");
+                    errorMessage.textContent = "Something went wrong";
+                    document.body.append(errorDiv);
+
+                    getGifs("error")
+                    .then(response => response.json())
+                    .then(response => {
+                        errorGif.src = response.data.images.original.url;
+                    });
+
+                    const errorGif = document.createElement("img");
+                    
+                    errorDiv.append(errorMessage, errorGif);
+                    img.style.visibility = "hidden";
+
+                    window.onclick = ()=>{
+                        try{
+                            document.body.removeChild(errorDiv);
+                            img.style.visibility = "visible";
+                        }catch(Error){}
+                    }
+                });
+            }
+
+            loadImage("cats");
+        </script>
+    </body>
+</html>
