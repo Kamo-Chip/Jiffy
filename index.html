@@ -39,15 +39,13 @@
                 return fetch(`https://api.giphy.com/v1/gifs/translate?api_key=32ryWNgR3urVCwpdNTZ7FxmLFtIZyFKo&s=${gifType}`, {mode: "cors"})
             }
 
-            function loadImage(gifType){
-                getGifs(gifType)
-                .then(function(response){
-                    return response.json();
-                })
-                .then(function(response){
-                    img.src = response.data.images.original.url;
-                })
-                .catch(()=>{
+            async function loadImage(gifType){
+                const gifs = await getGifs(gifType)
+                const gif = await gifs.json();
+                
+                try{
+                    img.src = gif.data.images.original.url;
+                }catch(error){
                     const errorDiv = document.createElement("div");
                     errorDiv.classList.add("error");
                     const errorMessage = document.createElement("p");
@@ -71,7 +69,7 @@
                             img.style.visibility = "visible";
                         }catch(Error){}
                     }
-                });
+                }
             }
 
             loadImage("cats");
